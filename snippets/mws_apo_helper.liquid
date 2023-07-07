@@ -1,0 +1,80 @@
+<script>
+function mwApoCustom() {
+  function getValue(id) {
+    if (typeof mwApoInit.response !== "undefined") {
+      for (const val of Object.values(mwApoInit.response)) {
+        for (const key in val.values) {
+          if (key == id) {
+            if (typeof val.values[id]) {
+              return val.values[id].value.title;
+            }
+          }
+        }
+      }
+    }
+  }
+    
+  function addOptionsName() {
+    const options = document.querySelectorAll('.mw-option--type-swatch .mw-option__value, .mw-option--type-multiswatch .mw-option__value');
+    options.forEach((option) => {
+      let id = option.getAttribute('data-value-id');       
+      let value = getValue(id);  
+      let divMWS = document.createElement('div');
+      
+      divMWS.classList.add('mws_option-name');
+      divMWS.innerHTML = value;
+      option.appendChild(divMWS);
+    });
+  }
+
+  
+  window.mwApoInit  = window.mwApoInit  || {};
+  window.mwApoInit.onEvent = function (event, args) {  
+    if (event == "init::finish") { 
+      if (document.querySelector(".btm-btnctr")) {
+        document.querySelector(".btm-btnctr").style.display = "none";
+        document.querySelector(".shopify-product-form").classList.add('mws-text-hide');
+      }
+  
+      setTimeout(function () {
+       addOptionsName();
+     }, 100);
+    }
+  };
+  window.mwApoInit.onCallback = function (event, data) {
+     return data;
+  };
+  window.mwApoInit.settings.selectors.product.gallery_container = '.custom_selector';
+}
+</script>
+
+<style>
+
+  
+  .shopify-product-form.mws-text-hide::after {
+     content: none !important;
+  }
+  
+
+  
+ .mw-option .mw-stack__item:nth-child(2).mws-hide {
+    max-height: 0 !important;
+    transition: max-height 0.15s ease-out;
+    overflow: hidden;
+  }
+  
+ 
+  label.mw-label {
+    padding-left: 5px;
+  }
+
+  .mws_option-name {
+    max-width: 100px ;
+    line-height: 14px;
+    font-size: small;
+    font-weight: bold;
+    text-align: center;
+    margin: 0 auto;
+  }
+
+</style>

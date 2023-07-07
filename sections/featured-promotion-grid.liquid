@@ -1,0 +1,348 @@
+{% comment %}
+
+Code created by JadePuma
+Instructions - https://jadepuma.com/blogs/shopify-tutorials/featured-content-blocks-with-grid-layout-for-flex-theme
+Last editted - 14Sep22
+ 
+{% endcomment %}
+
+{% assign block_width = 100 | divided_by: section.settings.blocks_per_row %}
+
+
+<section  class="section is-width-{{ section.settings.width }}">
+  {% if  section.settings.title != blank %}
+  <h2 class="featured_content_blocks_heading">{{ section.settings.title }}</h2> 
+  {% endif %}
+  <div class="featured_content_blocks_container container">
+    {% assign blocks_per_row = section.settings.blocks_per_row | default: 3 %}
+    {% assign block_width = 100 | divided_by: blocks_per_row %}
+    {% for block in section.blocks %}
+    <div class="featured_content_blocks_item" style="background-color:{{ block.settings.background_color }}">
+      <div class="banner_full_link_promotion">
+        <a href="{{ block.settings.button_link }}">Shop Now</a>
+      </div>
+      <div class="featured_content_blocks_image_container">
+        <a href="{{ block.settings.button_link }}"><img class="featured_content_blocks_image" src="{{ block.settings.image | img_url: 'large' }}" ></a>
+        <div class="featured_content_blocks_hover">
+          <div class="featured_content_blocks_hover_text" style="color:{{ block.settings.text_color }};">
+            <h2>{{ block.settings.title }}</h2>
+            <p>{{ block.settings.text_content }}</p>
+          </div>
+          <div class="featured_content_blocks_button_container">
+            {% if block.settings.button_label != blank %}
+            <a href="{{ block.settings.button_link }}">
+              <button class="featured_content_blocks_button button">{{ block.settings.button_label }}</button>
+            </a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+{% style %}
+   .banner_full_link_promotion{}
+  .banner_full_link_promotion a{
+    top:10000;
+    bottom:10000;
+    left:10000;
+    right:10000;
+    position: absolute;
+    z-index: 100;
+    opacity: 0;
+  }
+ #shopify-section-{{ section.id }} {
+  padding-top: {{ section.settings.padding_top }}px;
+  padding-bottom: {{ section.settings.padding_bottom }}px;
+  {% if section.settings.width == 'wide' %}
+    width: 100%;
+  {% endif %}
+}
+
+.featured_content_blocks_container {
+  display: flex;
+  flex-direction: row;
+  {% if section.settings.layout_type == "classic" %}
+    justify-content: center;
+  {% else %}
+    justify-content: flex-start;
+  {% endif %}
+  flex-wrap: wrap;
+  gap: 0;
+  margin-bottom: -15px;
+}
+
+.featured_content_blocks_item {
+    text-align: center;
+    flex-basis:{{block_width}}%;
+    {% if section.settings.show_border %}
+      border: 1px solid black;
+    {% endif %}
+    box-sizing: border-box;
+  }
+
+@media only screen and (max-width: 800px) {
+  .featured_content_blocks_item {
+    text-align: center;
+    flex-basis: 50%;
+    
+  }
+    .featured_content_blocks_item {
+    margin-bottom: -30px;
+}
+  .featured_content_blocks_hover
+  {
+    display: none!important;
+  }
+}
+
+
+@media only screen and (max-width: 480px) {
+  .featured_content_blocks_item {
+    text-align: center;
+    flex-basis: 50%;
+  }
+    .featured_content_blocks_item {
+    margin-bottom: -15px;
+
+  }
+  .featured_content_blocks_hover
+  {
+     display: none!important;
+  }
+}
+
+.featured_content_blocks_image_container {
+  position: relative;
+}
+
+.featured_content_blocks_hover {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  opacity: 0;
+  background-color: rgba(189, 189, 189, 0.5);
+  transition: opacity 0.3s ease-in-out;
+}
+
+.featured_content_blocks_item:hover .featured_content_blocks_hover {
+  opacity: 1;
+}
+
+.featured_content_blocks_hover_text {
+  text-align: center;
+  padding: 20px;
+  color: {{ block.settings.text_color }};
+}
+
+.featured_content_blocks_button_container {
+  text-align: center;
+}
+
+.featured_content_blocks_button_container a {
+  display: block;
+}
+
+.featured_content_blocks_button {
+  margin-top: 20px;
+  background-color: {{ block.settings.button_background_color }};
+  color: {{ block.settings.button_text_color }};
+  border: none;
+  padding: 10px 20px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out;
+}
+
+.featured_content_blocks_button:hover {
+  background-color: {{ block.settings.button_hover_background_color }};
+}
+
+.featured_content_blocks_image {
+  width: 100%;
+}
+  
+.featured_content_blocks_heading {
+  {% assign alignment = section.settings.alignment %}
+  {% if alignment == "left" %}
+    text-align: left;
+  {% elsif alignment == "center" %}
+    text-align: center;
+  {% elsif alignment == "right" %}
+    text-align: right;
+  {% endif %}
+  padding: 25px 0px;
+  {% if section.settings.heading_inset %}
+    padding: 25px 25px;
+  {% endif %}
+  background-color: {{ section.settings.heading_background_color }};
+  color: {{ section.settings.heading_text_color }};
+  margin: 0px;
+}
+
+{% endstyle %}
+
+
+{% schema %}
+
+{
+  "name": "Featured Content Blocks",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Heading"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Text"
+    },
+{
+  "type": "select",
+  "id": "alignment",
+  "label": "Alignment",
+  "options": [
+    {
+      "value": "left",
+      "label": "Left"
+    },
+    {
+      "value": "center",
+      "label": "Center"
+    },
+    {
+      "value": "right",
+      "label": "Right"
+    }
+  ],
+  "default": "left"
+},
+    {
+      "type": "color",
+      "id": "heading_background_color",
+      "label": "Heading Background Color"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Heading Text Color"
+    },
+    {
+      "type": "checkbox",
+      "id": "heading_inset",
+      "label": "Heading Inset",
+      "default": false
+    },
+      {
+        "type": "header",
+        "content": "Layout"
+      },
+      {
+        "type": "select",
+        "id": "width",
+        "label": "Width",
+        "default": "standard",
+        "options": [
+          {
+            "value": "standard",
+            "label": "Standard"
+          },
+          {
+            "value": "wide",
+            "label": "Wide"
+          }
+        ]
+      },
+ {
+        "type": "select",
+        "id": "layout_type",
+        "label": "Layout style",
+        "default": "classic",
+        "options": [
+          {
+            "value": "classic",
+            "label": "Classic"
+          },
+          {
+            "value": "masonry",
+            "label": "Vertical masonry"
+          }
+        ]
+      },
+    {
+      "type": "range",
+      "id": "blocks_per_row",
+      "label": "Blocks Per Row",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "checkbox",
+      "id": "show_border",
+      "label": "Show Border",
+      "default": false
+    }
+  ],
+   "blocks": [
+    {
+      "type": "Item",
+      "name": "Item",
+      "settings": [
+        {
+        "type": "image_picker",
+        "id": "image",
+        "label": "Image"
+        },
+        {
+        "type": "text",
+        "id": "title",
+        "label": "Heading",
+       "default": "Heading"
+        },
+        {
+        "type": "textarea",
+        "id": "text_content",
+        "label": "Text Content",
+        "default": "Add text content"
+        },
+        {
+        "type": "text",
+        "id": "button_label",
+        "label": "Button Label",
+        "default": "Learn More"
+        },
+        {
+        "type": "url",
+        "id": "button_link",
+        "label": "Link"
+        },
+        {
+          "type": "color",
+          "id": "background_color",
+          "label": "Background Color"
+        },
+        {
+          "type": "color",
+          "id": "text_color",
+          "label": "Text Color"
+        }
+      ]
+    }
+  ],
+"presets": [
+    {
+       "name": "Featured Content Blocks"
+    }
+   ]
+}
+{% endschema %}

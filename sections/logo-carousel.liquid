@@ -1,0 +1,150 @@
+{% schema %}
+{
+  "name": "Image Gallery",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Gallery Options"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Gallery Title"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "image_block",
+      "name": "Image Block",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image",
+          "info": "Select an image to display in the gallery block."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Image Gallery",
+      "category": "Media"
+    }
+  ]
+}
+{% endschema %}
+
+{% stylesheet %}
+  #shopify-section-{{ section.id }} {
+	align-items: center;
+	background: #E3E3E3;
+	display: flex;
+	height: 100vh;
+	justify-content: center;
+}
+
+@mixin white-gradient {
+	background: linear-gradient(to right,  rgba(255,255,255,1) 0%,rgba(255,255,255,0) 100%);
+}
+
+$animationSpeed: 40s;
+
+// Animation
+@keyframes scroll {
+	0% { transform: translateX(0); }
+	100% { transform: translateX(calc(-250px * 7))}
+}
+
+
+// Styling
+.custom-slider {
+	background: white;
+	box-shadow: 0 10px 20px -5px rgba(0, 0, 0, .125);
+	height: 100px;
+	margin: auto;
+	overflow:hidden;
+	position: relative;
+	width: 960px;
+	
+	&::before,
+	&::after {
+		@include white-gradient;
+		content: "";
+		height: 100px;
+		position: absolute;
+		width: 200px;
+		z-index: 2;
+	}
+	
+	&::after {
+		right: 0;
+		top: 0;
+		transform: rotateZ(180deg);
+	}
+
+	&::before {
+		left: 0;
+		top: 0;
+	}
+	
+	.custom-slide-track {
+		animation: scroll $animationSpeed linear infinite;
+		display: flex;
+		width: calc(250px * 14);
+	}
+	
+	.custom-slide {
+		height: 100px;
+		width: 250px;
+	}
+}
+
+{% endstylesheet %}
+
+{% capture sliderGallery %}
+  <div class="slider-container page-width">
+    <div class="slider-gallery">
+      {% for block in section.blocks %}
+        <div class="slide">
+          <img loading="lazy" src="{{ block.settings.image | img_url: 'medium' }}" alt="">
+        </div>
+      {% endfor %}
+      {% for block in section.blocks %}
+        <div class="slide">
+          <img loading="lazy" src="{{ block.settings.image | img_url: 'medium' }}" alt="">
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+{% endcapture %}
+
+{{ sliderGallery }}
+
+<script>
+  var slider = document.querySelector('.slider-gallery');
+  var slides = document.querySelectorAll('.slide');
+  var slideWidth = slides[0].offsetWidth;
+  var slideIndex = 0;
+
+  // Duplicate the slides to create a continuous loop.
+  slider.innerHTML += slider.innerHTML;
+
+  // Set the width of the slider to accommodate the duplicated slides.
+  slider.style.width = slides.length * slideWidth + 'px';
+
+  // Start the auto-scrolling animation.
+  function startAnimation() {
+    slideIndex++;
+    slider.style.transform = 'translateX(' + (-slideIndex * slideWidth) + 'px)';
+    if (slideIndex >= slides.length / 2) {
+      slideIndex = 0;
+      slider.style.transition = 'none';
+      slider.style.transform = 'translateX(' + (-slideIndex * slideWidth) + 'px)';
+    } else {
+      slider.style.transition = 'transform 0.5s ease-out';
+    }
+    setTimeout(startAnimation, 3000);
+  }
+  startAnimation();
+</script>
